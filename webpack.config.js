@@ -21,67 +21,11 @@ module.exports = [
     mode,
     devtool,
     target: 'web',
-    entry: path.resolve(__dirname, 'src/worker/index.js'),
-    output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: 'index.js',
-      library: 'SFCJS',
-      libraryTarget: 'umd',
-    },
-    resolve: {
-      alias,
-      fallback,
-    },
-    plugins: [
-      defines,
-    ],
-    optimization,
-  },
-  {
-    mode,
-    devtool,
-    target: 'webworker',
-    entry: path.resolve(__dirname, 'src/worker/worker.js'),
-    output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: 'worker.js',
-    },
-    resolve: {
-      alias,
-      fallback,
-    },
-    plugins: [
-      defines,
-    ],
-    optimization,
-  },
-  {
-    mode: 'none',
-    target: 'node',
-    entry: path.resolve(__dirname, 'src/bundler/index.js'),
-    output: {
-      path: __dirname,
-      filename: 'bundler.js',
-      libraryTarget: 'commonjs2',
-    },
-    resolve: {
-      alias,
-      fallback,
-    },
-    plugins: [
-      defines,
-    ],
-    optimization,
-  },
-  {
-    mode,
-    devtool,
-    target: 'web',
-    entry: path.resolve(__dirname, 'src/index.js'),
+    entry: path.resolve(__dirname, 'es/index.js'),
     output: {
       path: __dirname,
       filename: 'index.js',
-      library: 'SFCJS',
+      library: 'phc',
       libraryTarget: 'umd',
     },
     resolve: {

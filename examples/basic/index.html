@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<link rel="phc" href="./component.htm" as="test-phc" />
+
+<test-phc class="test"></test-phc>
+<button id="remove">Remove</button>
+
+<script src="../../es/index.js" type="module"></script>
+<script>
+    document.querySelector('#remove').addEventListener('click', () => {
+        const test = document.querySelector('.test');
+        test.parentNode.removeChild(test);
+    });
+</script>

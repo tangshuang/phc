@@ -4,30 +4,28 @@ export const PHC_FILES = {};
 
 export const PHC_MODULES = {};
 
-export function loadModule(absUrl) {
+export function useModule(absUrl) {
     if (PHC_MODULES[absUrl]) {
         return PHC_MODULES[absUrl];
     }
-
-    const defer = PHC_MODULES[absUrl] = loadFile(absUrl).then(async (text) => {
-        const { cssChunks, jsChunks, htmlChunks, metas, links } = await parseChunks(text, { absUrl });
-        return { cssChunks, jsChunks, htmlChunks, metas, links };
-    });
+    PHC_MODULES[absUrl] = useFile(absUrl).then(text => parseChunks(text, { absUrl }));
+    const defer = PHC_MODULES[absUrl];
     return defer;
 }
 
-export function loadFile(absUrl) {
+export function useFile(absUrl) {
     if (PHC_FILES[absUrl]) {
         return PHC_FILES[absUrl];
     }
 
-    const defer = PHC_FILES[absUrl] = fetch(absUrl).then(res => res.text());
+    PHC_FILES[absUrl] = fetch(absUrl).then(res => res.text());
+    const defer = PHC_FILES[absUrl];
     return defer;
 }
 
 export async function parseChunks(text, options) {
     const fragment = new DocumentFragment();
-    const temp = document.createElement('template');
+    const temp = document.createElement('div');
     fragment.appendChild(temp);
     temp.innerHTML = text;
 
@@ -35,7 +33,7 @@ export async function parseChunks(text, options) {
     const linkBlocks = Array.from(temp.querySelectorAll('link'));
     const cssBlocks = Array.from(temp.querySelectorAll('style'));
     const jsBlocks = Array.from(temp.querySelectorAll('script'));
-    const htmlBlocks = Array.from(temp.children).filter((item) => !['META', 'LINK', 'STYLE', 'SCRIPTS'].includes(item.nodeName));
+    const htmlBlocks = Array.from(temp.children).filter(item => !['META', 'LINK', 'STYLE', 'SCRIPT'].includes(item.nodeName));
 
     const metas = metaBlocks.map(meta => parseMeta(meta, options));
     const links = linkBlocks.map(link => parseLink(link, options));
@@ -43,12 +41,16 @@ export async function parseChunks(text, options) {
     const jsChunks = jsBlocks.map(script => parseScript(script, options));
     const htmlChunks = htmlBlocks.map(node => parseNode(node, options));
 
-    return { metas, links, cssChunks, jsChunks, htmlChunks };
+    return [metas, links, cssChunks, jsChunks, htmlChunks];
 }
 
-export function parseMeta(meta, options) {
+export function parseMeta(meta) {
     const names = meta.getAttributeNames();
-    const obj = names.reduce((obj, key) => { obj[key] = meta.getAttribute(key); return obj }, {});
+    const obj = names.reduce((obj, key) => {
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = meta.getAttribute(key);
+        return obj;
+    }, {});
     return obj;
 }
 
@@ -60,10 +62,12 @@ export function parseLink(link, options) {
     const obj = names.reduce((obj, key) => {
         const value = link.getAttribute(key);
         if (key === 'href' && !isAbsUrl(value)) {
-            const newHref = resolveUrl(absUrl, href);
+            const newHref = resolveUrl(absUrl, value);
+            // eslint-disable-next-line no-param-reassign
             obj[key] = newHref;
         }
         else {
+            // eslint-disable-next-line no-param-reassign
             obj[key] = value;
         }
         return obj;
@@ -73,7 +77,7 @@ export function parseLink(link, options) {
 
 export function parseCss(style, options) {
     const { absUrl } = options;
-    const cssText = style.innerText;
+    const cssText = style.innerHTML;
     const newCssText = cssText.replace(/@import\s*['"](.*?)['"]/gm, (matched, href) => {
         if (!isAbsUrl(href)) {
             const newHref = resolveUrl(absUrl, href);
@@ -81,13 +85,14 @@ export function parseCss(style, options) {
         }
         return matched;
     });
-    style.innerText = newCssText;
+    // eslint-disable-next-line no-param-reassign
+    style.innerHTML = newCssText;
     return style;
 }
 
 export function parseScript(script, options) {
     const { absUrl } = options;
-    const text = script.innerText;
+    const text = script.innerHTML;
     const newText = text
         .replace(/import\s*['"](.*?)['"]/gm, (matched, href) => {
             if (!isAbsUrl(href)) {
@@ -103,7 +108,8 @@ export function parseScript(script, options) {
             }
             return matched;
         });
-    script.innerText = newText;
+    // eslint-disable-next-line no-param-reassign
+    script.innerHTML = newText;
 
     const src = script.getAttribute('src');
     if (src && !isAbsUrl(src)) {

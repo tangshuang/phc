@@ -1,0 +1,22 @@
+<div id="root"></div>
+
+<script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+<script type="module">
+    import htm from 'https://esm.sh/htm';
+
+    const doc = new Document();
+
+    const html = htm.bind(React.createElement);
+
+    function App() {
+        const [state, setState] = React.useState('Hello world!');
+        const change = () => setState('I am changed');
+        return html`
+            <h1>${state}</h1>
+            <button onClick=${change}>change</button>
+        `;
+    }
+
+    ReactDOM.render(html`<${App} />`, doc.querySelector('#root'));
+</script>

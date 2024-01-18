@@ -1,24 +1,23 @@
 {
-  "name": "sfcjs",
-  "version": "0.1.5",
-  "description": "轻便的前端JIT视图层驱动框架",
+  "name": "phc",
+  "version": "0.1.0",
+  "description": "Light Javascript Hypertext File Component Framework",
   "main": "index.js",
+  "module": "es/index.js",
   "scripts": {
     "prepare": "husky install",
-    "lint": "eslint --ext .js src",
+    "lint": "eslint --ext .js es",
     "dev": "webpack --watch",
     "build": "NODE_ENV=production webpack",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/tencent-cdc/sfcjs.git"
+    "url": "http://github.com/tangshuang/phc.git"
   },
   "author": "tangshuang",
   "license": "MIT",
   "dependencies": {
-    "immer": "^9.0.12",
-    "ts-fns": "^10.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

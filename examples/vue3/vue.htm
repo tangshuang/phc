@@ -1,0 +1,24 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<div id="app" style="display: none;">
+    <span>{{ message }}</span>
+    <button @click="change">change</button>
+</div>
+
+<script>
+    const { createApp, ref } = Vue;
+    const doc = new Document();
+    const root = doc.querySelector('#app');
+
+    createApp({
+        setup() {
+            const message = ref('Hello vue!')
+            const change = () => message.value = 'I am changed';
+            return {
+                message,
+                change,
+            }
+        }
+    }).mount(root)
+    root.style.display = 'block';
+</script>

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+/bundler.js
+/index.js
+/worker.js
+/tools.js
+coverage/
+*.js.map

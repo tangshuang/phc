@@ -1,0 +1,36 @@
+{
+  "name": "sfcjs",
+  "version": "0.1.5",
+  "description": "轻便的前端JIT视图层驱动框架",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint --ext .js src",
+    "dev": "webpack --watch",
+    "build": "NODE_ENV=production webpack",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/tencent-cdc/sfcjs.git"
+  },
+  "author": "tangshuang",
+  "license": "MIT",
+  "dependencies": {
+    "immer": "^9.0.12",
+    "ts-fns": "^10.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/eslint-parser": "^7.16.3",
+    "@babel/preset-env": "^7.16.5",
+    "babel-jest": "^27.4.5",
+    "eslint": "^7.24.0",
+    "eslint-config-tencent": "^1.0.2",
+    "husky": "^6.0.0",
+    "jest": "^27.4.5",
+    "prettier-eslint": "^12.0.0",
+    "webpack": "^5.31.0",
+    "webpack-cli": "^4.8.0"
+  }
+}

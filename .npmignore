@@ -1,0 +1,14 @@
+.ci/
+.example/
+.husky/
+.vscode/
+.eslintignore
+.eslintrc
+code.yml
+webpack.config.js
+coverage/
+.babelrc
+examples/
+.github/
+test/
+jest.config.js

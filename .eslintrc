@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "importScripts": "readonly",
+    "describe": "readonly",
+    "test": "readonly",
+    "expect": "readonly",
+    "jest": "readonly"
+  },
+  "extends": [
+    "eslint-config-tencent"
+  ],
+  "rules": {
+    "no-console": ["error", { "allow": ["debug", "warn", "error"] }],
+    "brace-style": 0
+  }
+}

@@ -1,5 +1,5 @@
 import { useModule } from './loader.js';
-import { getStringHash } from './utils.js';
+import { getStringHash, createSafeExp } from './utils.js';
 
 export const PHC_COMPONENTS = {};
 
@@ -60,8 +60,19 @@ function useLinkAsComponent(link, customElement) {
 }
 
 function createCss(cssChunks, customElement) {
-    const { shadowRoot } = customElement;
+    const { shadowRoot, components, componentPrefix } = customElement;
+    const componentNames = Object.keys(components);
     cssChunks.forEach((chunk) => {
+        let { innerHTML } = chunk;
+        componentNames.forEach((name) => {
+            const customElementName = `${componentPrefix}-${name}`;
+            const reg = new RegExp(`([\\n|\\s])${createSafeExp(name)}([\\s|\\{])`, 'g');
+            if (reg.test(chunk.innerHTML)) {
+                innerHTML = innerHTML.replace(reg, `$1${customElementName}$2`);
+            }
+        });
+        // eslint-disable-next-line no-param-reassign
+        chunk.innerHTML = innerHTML;
         shadowRoot.appendChild(chunk);
     });
 }
@@ -91,8 +102,7 @@ function createHtmlAndComponents(htmlChunks, customElement) {
     htmlChunks.forEach((chunk) => {
         componentNames.forEach((name) => {
             const customElementName = `${componentPrefix}-${name}`;
-            const els = chunk.querySelectorAll(name);
-            els.forEach((el) => {
+            const replace = (el) => {
                 const node = document.createElement(customElementName);
                 const attrNames = el.getAttributeNames();
                 attrNames.forEach((attr) => {
@@ -102,8 +112,21 @@ function createHtmlAndComponents(htmlChunks, customElement) {
                 el.childNodes.forEach((child) => {
                     node.appendChild(child);
                 });
+                return node;
+            };
+
+            const els = chunk.querySelectorAll(name);
+            els.forEach((el) => {
+                const node = replace(el);
                 el.replaceWith(node);
             });
+
+            // 替换自身
+            if (chunk.nodeName.toLowerCase() === name) {
+                const node = replace(chunk);
+                // eslint-disable-next-line no-param-reassign
+                chunk = node;
+            }
         });
         shadowRoot.appendChild(chunk);
     });

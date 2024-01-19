@@ -1,0 +1,14 @@
+<div id="root">aaa</div>
+
+<script>
+    const doc = new Document();
+    const attrs = doc.rootElement.attributes;
+    console.log(attrs);
+
+    setTimeout(() => {
+        doc.querySelector('#root').innerText = 'bbb';
+    }, 1000);
+
+    const win = new Window();
+    console.log(win.location);
+</script>

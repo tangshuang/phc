@@ -93,12 +93,20 @@ function createHtml(htmlChunks, customElement) {
 function createHtmlAndComponents(htmlChunks, customElement) {
     const { shadowRoot, components, componentPrefix } = customElement;
     const componentNames = Object.keys(components);
+    const componentMap = {};
     componentNames.forEach((name) => {
         const customElementName = `${componentPrefix}-${name}`;
         if (!customElements.get(customElementName)) {
             customElements.define(customElementName, components[name]);
         }
+        const key = customElementName.split('-')
+            .map(str => str.replace(str[0].toUpperCase()))
+            .join('');
+        componentMap[key] = name;
     });
+    // patch component map
+    shadowRoot.components = componentMap;
+
     htmlChunks.forEach((chunk) => {
         componentNames.forEach((name) => {
             const customElementName = `${componentPrefix}-${name}`;

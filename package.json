@@ -1,6 +1,6 @@
 {
   "name": "phc",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Light Javascript Hypertext File Component Framework",
   "main": "index.js",
   "module": "es/index.js",

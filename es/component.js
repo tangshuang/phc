@@ -99,10 +99,10 @@ function createHtmlAndComponents(htmlChunks, customElement) {
         if (!customElements.get(customElementName)) {
             customElements.define(customElementName, components[name]);
         }
-        const key = customElementName.split('-')
-            .map(str => str.replace(str[0].toUpperCase()))
+        const key = name.split('-')
+            .map(str => str.replace(str[0], str[0].toUpperCase()))
             .join('');
-        componentMap[key] = name;
+        componentMap[key] = customElementName;
     });
     // patch component map
     shadowRoot.components = componentMap;

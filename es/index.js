@@ -1,4 +1,9 @@
-import './bootstrap.js';
+import { bootstrap } from './bootstrap.js';
 
-export { useComponent } from './component.js';
-export { useFile, useModule } from './loader.js';
+const currUrl = location.href;
+if (document.readyState === 'complete') {
+    bootstrap(currUrl);
+}
+else {
+    addEventListener('load', () => bootstrap(currUrl));
+}

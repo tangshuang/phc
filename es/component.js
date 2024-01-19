@@ -66,7 +66,7 @@ function createCss(cssChunks, customElement) {
         let { innerHTML } = chunk;
         componentNames.forEach((name) => {
             const customElementName = `${componentPrefix}-${name}`;
-            const reg = new RegExp(`([\\n|\\s])${createSafeExp(name)}([\\s|\\{])`, 'g');
+            const reg = new RegExp(`([\\n|\\s|(|)|}|+|>])${createSafeExp(name)}([\\s|\\{])`, 'g');
             if (reg.test(chunk.innerHTML)) {
                 innerHTML = innerHTML.replace(reg, `$1${customElementName}$2`);
             }

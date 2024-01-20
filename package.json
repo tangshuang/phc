@@ -17,7 +17,6 @@
   },
   "author": "tangshuang",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/eslint-parser": "^7.16.3",
@@ -28,6 +27,7 @@
     "husky": "^6.0.0",
     "jest": "^27.4.5",
     "prettier-eslint": "^12.0.0",
+    "vue": "^3.4.15",
     "webpack": "^5.31.0",
     "webpack-cli": "^4.8.0"
   }

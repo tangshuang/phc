@@ -4,22 +4,24 @@ export const PHC_FILES = {};
 
 export const PHC_MODULES = {};
 
-export function useModule(absUrl) {
+export function useModule(absUrl, options) {
     if (PHC_MODULES[absUrl]) {
         return PHC_MODULES[absUrl];
     }
-    PHC_MODULES[absUrl] = useFile(absUrl).then(text => parseChunks(text, { absUrl }));
+    PHC_MODULES[absUrl] = useFile(absUrl, options).then(text => parseChunks(text, { ...options, absUrl }));
     const defer = PHC_MODULES[absUrl];
     return defer;
 }
 
-export function useFile(absUrl) {
+export function useFile(absUrl, options) {
     if (PHC_FILES[absUrl]) {
         return PHC_FILES[absUrl];
     }
 
-    PHC_FILES[absUrl] = fetch(absUrl).then(res => res.text());
-    const defer = PHC_FILES[absUrl];
+    const defer = options?.onLoadFile
+        ? options.onLoadFile(absUrl)
+        : fetch(absUrl).then(res => res.text());
+    PHC_FILES[absUrl] = defer;
     return defer;
 }
 
@@ -28,6 +30,10 @@ export async function parseChunks(text, options) {
     const temp = document.createElement('div');
     fragment.appendChild(temp);
     temp.innerHTML = text;
+
+    if (options?.onParseChunks) {
+        options.onParseChunks(temp, options.absUrl);
+    }
 
     const metaBlocks = Array.from(temp.querySelectorAll('meta'));
     const linkBlocks = Array.from(temp.querySelectorAll('link'));
@@ -78,15 +84,29 @@ export function parseLink(link, options) {
 export function parseCss(style, options) {
     const { absUrl } = options;
     const cssText = style.innerHTML;
-    const newCssText = cssText.replace(/@import\s*['"](.*?)['"]/gm, (matched, href) => {
-        if (!isAbsUrl(href)) {
-            const newHref = resolveUrl(absUrl, href);
-            return `@import "${newHref}"`;
-        }
-        return matched;
-    });
+    const newCssText = cssText
+        .replace(/@import\s*['"](.*?)['"]/gm, (matched, href) => {
+            if (!isAbsUrl(href)) {
+                const newHref = resolveUrl(absUrl, href);
+                return `@import "${newHref}"`;
+            }
+            return matched;
+        })
+        .replace(/url\(['"]*(.*?)['"]*\)/gm, (matched, href) => {
+            if (!isAbsUrl(href)) {
+                const newHref = resolveUrl(absUrl, href);
+                return `url("${newHref}")`;
+            }
+            return matched;
+        });
+
     // eslint-disable-next-line no-param-reassign
     style.innerHTML = newCssText;
+
+    if (options?.onParseCss) {
+        options.onParseCss(style, absUrl);
+    }
+
     return style;
 }
 
@@ -115,6 +135,10 @@ export function parseScript(script, options) {
     if (src && !isAbsUrl(src)) {
         const newSrc = resolveUrl(absUrl, src);
         script.setAttribute('src', newSrc);
+    }
+
+    if (options?.onParseScript) {
+        options.onParseScript(script, absUrl);
     }
 
     return script;
@@ -147,6 +171,10 @@ export function parseNode(node, options) {
 
     transformImage(node);
     transformLink(node);
+
+    if (options?.onParseNode) {
+        options.onParseNode(node, absUrl);
+    }
 
     return node;
 }

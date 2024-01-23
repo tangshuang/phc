@@ -1,5 +1,5 @@
 import { useModule } from './loader.js';
-import { getStringHash, createSafeExp } from './utils.js';
+import { getStringHash, createSafeExp, forEach, appendChild, keys, createElement, getAttribute, querySelectorAll, defineProperty, getAttributeNames } from './utils.js';
 
 export const PHC_COMPONENTS = {};
 
@@ -41,13 +41,13 @@ export function useComponent(absUrl, options) {
 
     function useLinks(links, customElement) {
         const { shadowRoot } = customElement;
-        links.forEach((link) => {
+        forEach(links, (link) => {
             if (link.rel === 'phc') {
                 useLinkAsComponent(link, customElement);
             }
             else {
                 // eslint-disable-next-line no-underscore-dangle
-                shadowRoot.appendChild(link.__link);
+                appendChild(shadowRoot, link.__link);
             }
         });
     }
@@ -60,10 +60,10 @@ export function useComponent(absUrl, options) {
 
     function createCss(cssChunks, customElement) {
         const { shadowRoot, components, componentPrefix } = customElement;
-        const componentNames = Object.keys(components);
-        cssChunks.forEach((chunk) => {
+        const componentNames = keys(components);
+        forEach(cssChunks, (chunk) => {
             let { innerHTML } = chunk;
-            componentNames.forEach((name) => {
+            forEach(componentNames, (name) => {
                 const customElementName = `${componentPrefix}-${name}`;
                 const reg = new RegExp(`([\\n|\\s|(|)|}|+|>])${createSafeExp(name)}([\\s|\\{])`, 'g');
                 if (reg.test(chunk.innerHTML)) {
@@ -72,28 +72,28 @@ export function useComponent(absUrl, options) {
             });
             // eslint-disable-next-line no-param-reassign
             chunk.innerHTML = innerHTML;
-            shadowRoot.appendChild(chunk);
+            appendChild(shadowRoot, chunk);
         });
     }
 
     function createHtml(htmlChunks, customElement) {
         const { components, shadowRoot  } = customElement;
-        const componentNames = Object.keys(components);
+        const componentNames = keys(components);
         if (componentNames.length) {
             createHtmlAndComponents(htmlChunks, customElement);
         }
         else {
-            htmlChunks.forEach((el) => {
-                shadowRoot.appendChild(el);
+            forEach(htmlChunks, (el) => {
+                appendChild(shadowRoot, el);
             });
         }
     }
 
     function createHtmlAndComponents(htmlChunks, customElement) {
         const { shadowRoot, components, componentPrefix } = customElement;
-        const componentNames = Object.keys(components);
+        const componentNames = keys(components);
         const componentMap = {};
-        componentNames.forEach((name) => {
+        forEach(componentNames, (name) => {
             const customElementName = `${componentPrefix}-${name}`;
             if (!customElements.get(customElementName)) {
                 customElements.define(customElementName, components[name]);
@@ -106,24 +106,24 @@ export function useComponent(absUrl, options) {
         // patch component map
         shadowRoot.components = componentMap;
 
-        htmlChunks.forEach((chunk) => {
-            componentNames.forEach((name) => {
+        forEach(htmlChunks, (chunk) => {
+            forEach(componentNames, (name) => {
                 const customElementName = `${componentPrefix}-${name}`;
                 const replace = (el) => {
-                    const node = document.createElement(customElementName);
-                    const attrNames = el.getAttributeNames();
-                    attrNames.forEach((attr) => {
-                        const value = el.getAttribute(attr);
+                    const node = createElement(customElementName);
+                    const attrNames = getAttributeNames(el);
+                    forEach(attrNames, (attr) => {
+                        const value = getAttribute(el, attr);
                         node.setAttribute(attr, value);
                     });
-                    el.childNodes.forEach((child) => {
-                        node.appendChild(child);
+                    forEach(el.childNodes, (child) => {
+                        appendChild(node, child);
                     });
                     return node;
                 };
 
-                const els = chunk.querySelectorAll(name);
-                els.forEach((el) => {
+                const els = querySelectorAll(chunk, name);
+                forEach(els, (el) => {
                     const node = replace(el);
                     el.replaceWith(node);
                 });
@@ -135,20 +135,20 @@ export function useComponent(absUrl, options) {
                     chunk = node;
                 }
             });
-            shadowRoot.appendChild(chunk);
+            appendChild(shadowRoot, chunk);
         });
     }
 
     async function createJs(jsChunks, customElement) {
         const scripts = [];
         await Promise.all(jsChunks.map(async (chunk) => {
-            const type = chunk.getAttribute('type');
+            const type = getAttribute(chunk, 'type');
 
             if (type && type !== 'module' && type !== 'text/javascript') {
                 return;
             }
 
-            const src = chunk.getAttribute('src');
+            const src = getAttribute(chunk, 'src');
             const text = chunk.innerHTML;
 
             scripts.push({ text, src, type });
@@ -164,7 +164,7 @@ export function useComponent(absUrl, options) {
     async function runScripts(scripts, customElement) {
         const innerContents = scripts
             .map(({ src, text, type }) => {
-                const script = document.createElement('script');
+                const script = createElement('script');
                 if (type) {
                     script.type = type;
                 }
@@ -179,21 +179,21 @@ export function useComponent(absUrl, options) {
             .map(script => script.outerHTML);
         const innerHTML = innerContents.join('\n');
 
-        const sandbox = document.createElement('iframe');
+        const sandbox = createElement('iframe');
         sandbox.style.position = 'fixed';
-        sandbox.style.top = '-100000px';
+        sandbox.style.top = '-100em';
         sandbox.style.opacity = '0';
         sandbox.srcdoc = innerHTML;
         // eslint-disable-next-line no-param-reassign
         customElement.sandbox = sandbox;
 
         // 必须先挂载才能生成窗口对象，否则下面的win是空的
-        document.body.appendChild(sandbox);
+        appendChild(document.body, sandbox);
 
         const win = sandbox.contentWindow;
         const { shadowRoot } = customElement;
         win.Document = function () {
-            Object.defineProperty(shadowRoot, 'rootElement', { get: () => customElement });
+            defineProperty(shadowRoot, 'rootElement', { get: () => customElement });
             return shadowRoot;
         };
         win.Window = function () {

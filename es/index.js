@@ -1,7 +1,9 @@
 import { bootstrap } from './bootstrap.js';
 
+const config = {};
+
 const plugins = [];
-const createHook = method => (...args) => {
+const createHook = method => config[method] = (...args) => {
     plugins.forEach((plugin) => {
         plugin[method]?.(...args);
     });
@@ -11,12 +13,10 @@ export function use(plugin) {
     plugins.push(plugin);
 }
 
-export const config = {
-    onParseChunks: createHook('onParseChunks'),
-    onParseCss: createHook('onParseCss'),
-    onParseScript: createHook('onParseScript'),
-    onParseNode: createHook('onParseNode'),
-};
+createHook('onParseChunks');
+createHook('onParseCss');
+createHook('onParseScript');
+createHook('onParseNode');
 
 const currUrl = location.href;
 if (document.readyState === 'complete') {

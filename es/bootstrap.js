@@ -1,13 +1,13 @@
 import { useComponent } from './component.js';
-import { resolveUrl } from './utils.js';
+import { resolveUrl, querySelectorAll, getAttribute, forEach } from './utils.js';
 
 export function bootstrap(currUrl, options) {
-    const links = document.querySelectorAll('link');
-    links.forEach((link) => {
+    const links = querySelectorAll(document, 'link');
+    forEach(links, (link) => {
         if (link.rel !== 'phc') {
             return;
         }
-        const name = link.getAttribute('as');
+        const name = getAttribute(link, 'as');
         if (!name) {
             return;
         }

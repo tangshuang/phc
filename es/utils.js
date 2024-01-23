@@ -1,21 +1,13 @@
 export function resolveUrl(baseUrl, uri) {
-    if (!uri) {
-        throw new Error('baseUrl & uri required');
-    }
-
     // 使用 https://xxx
     if (isAbsUrl(uri)) {
         return uri;
     }
 
-    const isAbs = baseUrl[0] === '/' && baseUrl[1] !== '/';
-    // 必须是 /a/b/c || http://xxx
-    if (!isAbs && (!baseUrl || !isAbsUrl(baseUrl))) {
-        throw new Error('baseUrl without protool');
-    }
+    const isRoot = baseUrl[0] === '/' && baseUrl[1] !== '/';
 
     if (uri.indexOf('/') === 0) {
-        const origin = isAbs ? '' : baseUrl
+        const origin = isRoot ? '' : baseUrl
             .split('/')
             .slice(0, 3)
             .join('/');
@@ -77,3 +69,11 @@ export function createSafeExp(exp) {
     const safeExp = expList.join('');
     return safeExp;
 }
+
+export const querySelectorAll = (el, selector) => el.querySelectorAll(selector);
+export const getAttribute = (el, attr) => el.getAttribute(attr);
+export const getAttributeNames = el => el.getAttributeNames();
+export const forEach = (arr, fn) => arr.forEach(fn);
+export const appendChild = (el, child) => el.appendChild(child);
+export const { keys, defineProperty } = Object;
+export const createElement = tag => document.createElement(tag);

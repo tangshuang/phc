@@ -7,3 +7,4 @@ dist/
 coverage/
 *.js.map
 /umd/
+.DS_Store

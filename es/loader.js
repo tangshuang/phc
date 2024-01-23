@@ -1,4 +1,4 @@
-import { isAbsUrl, resolveUrl } from './utils.js';
+import { isAbsUrl, resolveUrl, createElement, appendChild, defineProperty, querySelectorAll, getAttribute, getAttributeNames, forEach } from './utils.js';
 
 export const PHC_FILES = {};
 
@@ -27,18 +27,18 @@ export function useFile(absUrl, options) {
 
 export async function parseChunks(text, options) {
     const fragment = new DocumentFragment();
-    const temp = document.createElement('div');
-    fragment.appendChild(temp);
+    const temp = createElement('div');
+    appendChild(fragment, temp);
     temp.innerHTML = text;
 
     if (options?.onParseChunks) {
         options.onParseChunks(temp, options.absUrl);
     }
 
-    const metaBlocks = Array.from(temp.querySelectorAll('meta'));
-    const linkBlocks = Array.from(temp.querySelectorAll('link'));
-    const cssBlocks = Array.from(temp.querySelectorAll('style'));
-    const jsBlocks = Array.from(temp.querySelectorAll('script'));
+    const metaBlocks = Array.from(querySelectorAll(temp, 'meta'));
+    const linkBlocks = Array.from(querySelectorAll(temp, 'link'));
+    const cssBlocks = Array.from(querySelectorAll(temp, 'style'));
+    const jsBlocks = Array.from(querySelectorAll(temp, 'script'));
     const htmlBlocks = Array.from(temp.children).filter(item => !['META', 'LINK', 'STYLE', 'SCRIPT'].includes(item.nodeName));
 
     const metas = metaBlocks.map(meta => parseMeta(meta, options));
@@ -51,10 +51,10 @@ export async function parseChunks(text, options) {
 }
 
 export function parseMeta(meta) {
-    const names = meta.getAttributeNames();
+    const names = getAttributeNames(meta);
     const obj = names.reduce((obj, key) => {
         // eslint-disable-next-line no-param-reassign
-        obj[key] = meta.getAttribute(key);
+        obj[key] = getAttribute(meta, key);
         return obj;
     }, {});
     return obj;
@@ -62,9 +62,9 @@ export function parseMeta(meta) {
 
 export function parseLink(link, options) {
     const { absUrl } = options;
-    const names = link.getAttributeNames();
+    const names = getAttributeNames(link);
     const ini = {};
-    Object.defineProperty(ini, '__link', { get: () => link, enumerable: false });
+    defineProperty(ini, '__link', { get: () => link, enumerable: false });
     const obj = names.reduce((obj, key) => {
         const value = link.getAttribute(key);
         if (key === 'href' && !isAbsUrl(value)) {
@@ -148,7 +148,7 @@ export function parseNode(node, options) {
     const { absUrl } = options;
 
     const transformImage = (img) => {
-        const src = img.getAttribute('src');
+        const src = getAttribute(img, 'src');
         if (src && !isAbsUrl(src)) {
             const newSrc = resolveUrl(absUrl, src);
             img.setAttribute('src', newSrc);
@@ -156,18 +156,18 @@ export function parseNode(node, options) {
     };
 
     const transformLink = (link) => {
-        const src = link.getAttribute('href');
+        const src = getAttribute(link, 'href');
         if (src && !isAbsUrl(src)) {
             const newSrc = resolveUrl(absUrl, src);
             link.setAttribute('src', newSrc);
         }
     };
 
-    const imgs = Array.from(node.querySelectorAll('img'));
-    imgs.forEach(transformImage);
+    const imgs = Array.from(querySelectorAll(node, 'img'));
+    forEach(imgs, transformImage);
 
-    const links = Array.from(node.querySelectorAll('a'));
-    links.forEach(transformLink);
+    const links = Array.from(querySelectorAll(node, 'a'));
+    forEach(links, transformLink);
 
     transformImage(node);
     transformLink(node);

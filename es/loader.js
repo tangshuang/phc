@@ -1,4 +1,5 @@
-import { isAbsUrl, resolveUrl, createElement, appendChild, defineProperty, querySelectorAll, getAttribute, getAttributeNames, forEach } from './utils.js';
+import { isAbsUrl, resolveUrl, createElement, appendChild, defineProperty, querySelectorAll, getAttribute, getAttributeNames, forEach, upperCase, toArrary } from './utils.js';
+import { PHC_TAG } from './constants.js';
 
 export const PHC_FILES = {};
 
@@ -35,11 +36,11 @@ export async function parseChunks(text, options) {
         options.onParseChunks(temp, options.absUrl);
     }
 
-    const metaBlocks = Array.from(querySelectorAll(temp, 'meta'));
-    const linkBlocks = Array.from(querySelectorAll(temp, 'link'));
-    const cssBlocks = Array.from(querySelectorAll(temp, 'style'));
-    const jsBlocks = Array.from(querySelectorAll(temp, 'script'));
-    const htmlBlocks = Array.from(temp.children).filter(item => !['META', 'LINK', 'STYLE', 'SCRIPT'].includes(item.nodeName));
+    const metaBlocks = toArrary(querySelectorAll(temp, 'meta'));
+    const linkBlocks = toArrary(querySelectorAll(temp, 'link'));
+    const cssBlocks = toArrary(querySelectorAll(temp, 'style'));
+    const jsBlocks = toArrary(querySelectorAll(temp, 'script'));
+    const htmlBlocks = toArrary(temp.children).filter(item => !['META', 'LINK', 'STYLE', 'SCRIPT'].includes(item.nodeName));
 
     const metas = metaBlocks.map(meta => parseMeta(meta, options));
     const links = linkBlocks.map(link => parseLink(link, options));
@@ -147,30 +148,27 @@ export function parseScript(script, options) {
 export function parseNode(node, options) {
     const { absUrl } = options;
 
-    const transformImage = (img) => {
-        const src = getAttribute(img, 'src');
-        if (src && !isAbsUrl(src)) {
-            const newSrc = resolveUrl(absUrl, src);
-            img.setAttribute('src', newSrc);
+    const transform = (child, attr) => {
+        const url = getAttribute(child, attr);
+        if (url && !isAbsUrl(url)) {
+            const newUrl = resolveUrl(absUrl, url);
+            child.setAttribute(attr, newUrl);
         }
     };
 
-    const transformLink = (link) => {
-        const src = getAttribute(link, 'href');
-        if (src && !isAbsUrl(src)) {
-            const newSrc = resolveUrl(absUrl, src);
-            link.setAttribute('src', newSrc);
+    const walk = (root, tag, attr) => {
+        const childs = querySelectorAll(root, tag);
+        forEach(childs, (child) => {
+            transform(child, attr);
+        });
+        if (root.nodeName === upperCase(tag)) {
+            transform(node, attr);
         }
     };
 
-    const imgs = Array.from(querySelectorAll(node, 'img'));
-    forEach(imgs, transformImage);
-
-    const links = Array.from(querySelectorAll(node, 'a'));
-    forEach(links, transformLink);
-
-    transformImage(node);
-    transformLink(node);
+    walk(node, 'img', 'src');
+    walk(node, 'a', 'href');
+    walk(node, PHC_TAG, 'src');
 
     if (options?.onParseNode) {
         options.onParseNode(node, absUrl);

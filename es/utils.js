@@ -4,27 +4,45 @@ export function resolveUrl(baseUrl, uri) {
         return uri;
     }
 
-    const isRoot = baseUrl[0] === '/' && baseUrl[1] !== '/';
-
-    if (uri.indexOf('/') === 0) {
-        const origin = isRoot ? '' : baseUrl
-            .split('/')
-            .slice(0, 3)
-            .join('/');
-        return origin + uri;
+    let path = baseUrl;
+    if (baseUrl.indexOf('#') > -1) {
+        // eslint-disable-next-line prefer-destructuring
+        path = baseUrl.split('#')[0];
+    }
+    if (baseUrl.indexOf('?') > -1) {
+        // eslint-disable-next-line prefer-destructuring
+        path = baseUrl.split('?')[0];
     }
 
-    if (/^(\?|&|#)$/.test(uri[0])) {
+    let root = '/';
+    if (isAbsUrl(baseUrl)) {
+        root = path.split('/').slice(0, 3)
+            .join('/');
+    }
+
+    // uri是根绝对路径
+    if (uri.indexOf('/') === 0) {
+        if (root === '/') {
+            return uri;
+        }
+        return root + uri;
+    }
+
+    if (uri[0] === '?') {
+        return path + uri;
+    }
+
+    if (['&', '#'].includes(uri[0])) {
         return baseUrl + uri;
     }
 
     let dir = '';
-    if (baseUrl[baseUrl.length - 1] === '/') {
-        dir = baseUrl.substring(0, baseUrl.length - 1);
+    if (path[path.length - 1] === '/') {
+        dir = path.substring(0, path.length - 1);
     } else {
-        const chain = baseUrl.split('/');
+        const chain = path.split('/');
         const tail = chain.pop();
-        dir = tail.indexOf('.') === -1 ? baseUrl : chain.join('/');
+        dir = tail.indexOf('.') === -1 ? path : chain.join('/');
     }
 
     const roots = dir.split('/');
@@ -46,6 +64,9 @@ export function resolveUrl(baseUrl, uri) {
 }
 
 export function isAbsUrl(url) {
+    if (url[0] === '/' && url[1] === '/') {
+        return true;
+    }
     return /^[a-z]+:\/\//.test(url);
 }
 
@@ -77,3 +98,8 @@ export const forEach = (arr, fn) => arr.forEach(fn);
 export const appendChild = (el, child) => el.appendChild(child);
 export const { keys, defineProperty } = Object;
 export const createElement = tag => document.createElement(tag);
+export const toArrary = arr => Array.from(arr);
+
+export function upperCase(str) {
+    return str.toUpperCase();
+}

@@ -8,7 +8,7 @@
 - 快速查看组件效果，没有繁杂的构建体系
 - 单文件组件：用一个.htm 文件写一个组件，独立部署到 CDN，不需要打包或编译
 - Web Components: 完全基于 customElements 实现，组件被放在 shadowDOM 中，支持样式隔离，支持向组件传标准的 slot
-- 没有 Virtual DOM，更新直接触达 DOM 节点，只有依赖了被修改变量的 DOM 节点会被更新
+- 没有 Virtual DOM，更新直接触达 DOM 节点
 - 异步按需加载：只拉出当前界面渲染需要的组件，当前界面不需要的组件不会被拉取
 - 通过`<link rel="sfc" as="custom-name">`快速链接组件
 - 组件可嵌套
@@ -20,15 +20,12 @@
 
 ```html
 <script src="https://unpkg.com/phc"></script>
-
-<link rel="phc" href="./some.htm" as="some-x" />
-
-<some-x></some-x>
+<phc-x src="./some.htm"></phc-x>
 ```
 
 ## 使用方法
 
-第一步，撰写一个.hm文件：
+第一步，撰写一个some.hm文件：
 
 ```html
 <style>
@@ -61,7 +58,7 @@
 ## Attributes
 
 ```html
-<some-x type="book"></some-x>
+<phc-x type="book" src="./some.htm"></phc-x>
 ```
 
 ```html
@@ -78,12 +75,27 @@
 
 ## 子组件
 
-只需要在组件中按下面方法撰写即可引入子组件：
+只需要在组件中继续使用`<phc-x>`即可引入子组件：
 
 ```html
-<link rel="phc" href="./sub.htm" as="sub-x" />
-<sub-x></sub-x>
+<phc-x src="./sub.htm"></phc-x>
 ```
+
+## 快速定义Web Component
+
+通过 phc 你可以快速定义一个新的 Web Component。在你的入口html文件中使用下面的`<link>`标签来定义一个名为`react-app`的自定义元素：
+
+```html
+<link rel="phc" href="../react/react.htm" as="react-app">
+```
+
+之后，你就可以在整个应用中使用它：
+
+```html
+<react-app></react-app>
+```
+
+*注意，在异步加载的页面或脚本中再使用`<link>`无法创建自定义元素。*
 
 ## MIT License
 

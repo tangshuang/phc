@@ -8,7 +8,7 @@ Light Javascript Hypertext File Component Framework.
 - Run component as quickly as possible, without any build tool chain.
 - SFC: write a component with .htm file, deploy to CDN directly, no pack or compiling
 - Web Components: based on customElements, rendering in shadowDOM, supports isolated styles/css, supports `slot` for component
-- No Virtual DOM: modify DOM nodes directly which is relate to variables
+- No Virtual DOM: modify DOM nodes directly
 - Asnyc Demanded Loading: only load demanded component files
 - Quick link: a `<link rel="sfc" as="custom-name">` to link a customElement quickly
 - Nested component system
@@ -20,10 +20,7 @@ Light Javascript Hypertext File Component Framework.
 
 ```html
 <script src="https://unpkg.com/phc"></script>
-
-<link rel="phc" href="./some.htm" as="some-x" />
-
-<some-x></some-x>
+<phc-x src="./some.htm"></phc-x>
 ```
 
 ## Write a component
@@ -61,7 +58,7 @@ Light Javascript Hypertext File Component Framework.
 ## Attributes
 
 ```html
-<some-x type="book"></some-x>
+<phc-x type="book" src="./some.htm"></phc-x>
 ```
 
 ```html
@@ -78,12 +75,27 @@ Light Javascript Hypertext File Component Framework.
 
 ## Subcomponent
 
-Just write in a component file:
+Just continue write `<phc-x>` in a component file:
 
 ```html
-<link rel="phc" href="./sub.htm" as="sub-x" />
-<sub-x></sub-x>
+<phc-x src="./sub.htm"></phc-x>
 ```
+
+## Quick define custom element
+
+Use `<link>` in your entry html file to define a custom element named `react-app`:
+
+```html
+<link rel="phc" href="../react/react.htm" as="react-app">
+```
+
+Then you can use the custom element any where in your application:
+
+```html
+<react-app></react-app>
+```
+
+*Notice, you can not load a new custom element by async files or scripts any more.*
 
 ## MIT License
 

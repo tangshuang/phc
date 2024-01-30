@@ -102,12 +102,11 @@
 你可以通过库暴露出来的`define`方法来手动定义个自定义元素。（define可在任意位置被调用，不受入口文件限制。）
 
 ```js
-import { define, register } from 'https://unpkg.com/phc/es/index.js';
-define('my-tag', `<div>text<div>`);
-register('some-tag', '...some_url...');
+import { define } from 'https://unpkg.com/phc/es/index.js';
+define('some-tag', '...some_url...');
 ```
 
-其中`define`的第二个参数可以直接传入.htm文件内容，你可以用webpack等工具，把.htm文件内容打包到一个js文件中，然后发布这个js文件，用户就可以只引入一个js就获得该自定义元素。
+其中`define`的第二个参数可以直接传入.htm文件的url地址。
 
 ## MIT License
 

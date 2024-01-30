@@ -102,9 +102,8 @@ Then you can use the custom element any where in your application:
 Use `define` to setup a custom element at anywhere.
 
 ```js
-import { define, register } from 'https://unpkg.com/phc/es/index.js';
-define('my-tag', `<div>text<div>`);
-register('some-tag', '...some_url...');
+import { define } from 'https://unpkg.com/phc/es/index.js';
+define('some-tag', '...some_url...');
 ```
 
 ## MIT License

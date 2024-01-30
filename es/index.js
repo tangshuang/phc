@@ -1,6 +1,6 @@
-import { bootstrap, define, register } from './bootstrap.js';
+import { bootstrap, define } from './bootstrap.js';
 
-export { define, register };
+export { define };
 
 const config = {};
 

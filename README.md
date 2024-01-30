@@ -97,6 +97,16 @@ Then you can use the custom element any where in your application:
 
 *Notice, you can not load a new custom element by async files or scripts any more.*
 
+**define**
+
+Use `define` to setup a custom element at anywhere.
+
+```js
+import { define, register } from 'https://unpkg.com/phc/es/index.js';
+define('my-tag', `<div>text<div>`);
+register('some-tag', '...some_url...');
+```
+
 ## MIT License
 
 Copyright (c) 2024 Shuang Tang

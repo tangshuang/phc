@@ -97,6 +97,18 @@
 
 *注意，在异步加载的页面或脚本中再使用`<link>`无法创建自定义元素。*
 
+**define**
+
+你可以通过库暴露出来的`define`方法来手动定义个自定义元素。（define可在任意位置被调用，不受入口文件限制。）
+
+```js
+import { define, register } from 'https://unpkg.com/phc/es/index.js';
+define('my-tag', `<div>text<div>`);
+register('some-tag', '...some_url...');
+```
+
+其中`define`的第二个参数可以直接传入.htm文件内容，你可以用webpack等工具，把.htm文件内容打包到一个js文件中，然后发布这个js文件，用户就可以只引入一个js就获得该自定义元素。
+
 ## MIT License
 
 Copyright (c) 2024 Shuang Tang

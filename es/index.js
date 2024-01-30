@@ -1,18 +1,20 @@
-import { bootstrap } from './bootstrap.js';
+import { bootstrap, define, register } from './bootstrap.js';
+
+export { define, register };
 
 const config = {};
 
 const plugins = [];
-const createHook = method => config[method] = (...args) => {
-    plugins.forEach((plugin) => {
-        plugin[method]?.(...args);
-    });
-};
+const createHook = method => config[method] = (...args) => plugins.reduce(
+    (_, plugin) => plugin[method]?.(...args),
+    null,
+);
 
 export function use(plugin) {
     plugins.push(plugin);
 }
 
+createHook('onLoadFile');
 createHook('onParseChunks');
 createHook('onParseCss');
 createHook('onParseScript');

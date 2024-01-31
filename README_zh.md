@@ -25,7 +25,7 @@
 
 ## 使用方法
 
-第一步，撰写一个some.hm文件：
+撰写一个some.hm文件：
 
 ```html
 <style>
@@ -39,21 +39,20 @@
 </div>
 
 <script>
-  // 此处继续往下阅读
-</script>
-```
-
-第二步：使用`Document`来引用组件的上下文
-
-```html
-<script>
-  const doc = new Document();
-
   fetch('some_article_url').then(res => res.text()).then((text) => {
-    doc.querySelector('.container main').innerText = text;
+    document.querySelector('.container main').innerText = text;
   });
 </script>
 ```
+
+**脚本限制**
+
+在script部分，我们不能完全按照Web原始接口进行使用，因为这些脚本（包含通过`<script src="..">`引入的脚步）都是运行在一个沙盒中，以避免对全局的应用造成污染。其中主要的限制如下：
+
+- 不可以直接使用window接口（如history, location等），只能把window作为一个全局变量用来作为中介
+- 不可以使用window和document上的事件，因为这些事件无法按照预期运行
+- 不可以通过document选取组件之外的其他内容，避免造成安全问题
+- 其他未知限制
 
 ## Attributes
 
@@ -63,12 +62,11 @@
 
 ```html
 <script>
-  const doc = new Document();
-  const attrs = doc.rootElement.attributes; // https://developer.mozilla.org/zh-CN/docs/Web/API/NamedNodeMap
+  const attrs = document.rootElement.attributes; // https://developer.mozilla.org/zh-CN/docs/Web/API/NamedNodeMap
   const type = attrs.type.value; // 这里`type`的值就是外面传入的属性的值，即"book"
 
   fetch(`some_article_url?type=${type}`).then(res => res.text()).then((text) => {
-    doc.querySelector('.container main').innerText = text;
+    document.querySelector('.container main').innerText = text;
   });
 </script>
 ```

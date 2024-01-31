@@ -1,0 +1,28 @@
+<div id="root"></div>
+
+<script>
+    const { body, rootElement, defaultView, URL, documentURI, activeElement, doctype, documentElement, firstElementChild, head, lastElementChild } = document;
+    const { attrs } = rootElement;
+
+    console.log({
+        body,
+        rootElement,
+        defaultView,
+        URL,
+        documentURI,
+        activeElement,
+        doctype,
+        documentElement,
+        firstElementChild,
+        head,
+        lastElementChild,
+        attrs,
+    })
+
+    const methods = ['querySelector', 'querySelectorAll', 'getElementById', 'getElementsByClassName', 'getElementsByName', 'getElementsByTagName'];
+    const root = document.getElementById('root');
+    console.log(root);
+
+    const win = document.defaultView;
+    console.log(win);
+</script>

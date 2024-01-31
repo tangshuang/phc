@@ -1,16 +1,15 @@
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-
-<div id="app" style="display: none;">
+<template>
     <span>{{ message }}</span>
     <button @click="change">change</button>
-</div>
+</template>
 
+<div id="app"></div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script>
     const { createApp, ref } = Vue;
-    const doc = new Document();
-    const root = doc.querySelector('#app');
-
     createApp({
+        template: document.querySelector('template').innerHTML,
         setup() {
             const message = ref('Hello vue!')
             const change = () => message.value = 'I am changed';
@@ -19,6 +18,5 @@
                 change,
             }
         }
-    }).mount(root)
-    root.style.display = 'block';
+    }).mount('#app');
 </script>

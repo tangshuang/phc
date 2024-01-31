@@ -1,5 +1,5 @@
 import { useModule } from './loader.js';
-import { forEach, appendChild, createElement, getAttribute, defineProperty, resolveUrl } from './utils.js';
+import { forEach, appendChild, createElement, getAttribute, resolveUrl } from './utils.js';
 
 export class PHCElement extends HTMLElement {
     constructor() {
@@ -111,11 +111,39 @@ async function runScripts(scripts, customElement) {
 
     const win = sandbox.contentWindow;
     const { shadowRoot } = customElement;
-    win.Document = function () {
-        defineProperty(shadowRoot, 'rootElement', { get: () => customElement });
-        return shadowRoot;
+
+    /**
+     * 重写接口，以让内部生效
+     */
+
+    const override = (map) => {
+        const desc = Object.keys(map).reduce((o, key) => {
+            // eslint-disable-next-line no-param-reassign
+            o[key] = { get: map[key] };
+            return o;
+        }, {});
+        Object.defineProperties(win.HTMLDocument.prototype, desc);
     };
-    win.Window = function () {
-        return window;
-    };
+
+    override({
+        body: () => shadowRoot,
+        rootElement: () => customElement,
+        defaultView: () => window,
+        URL: () => document.URL,
+        documentURI: () => customElement.getUrl(),
+        activeElement: () => document.activeElement,
+        doctype: () => document.doctype,
+        documentElement: () => shadowRoot,
+        firstElementChild: () => shadowRoot.firstElementChild,
+        head: () => shadowRoot,
+        lastElementChild: () => shadowRoot.lastElementChild,
+    });
+
+    const methods = ['querySelector', 'querySelectorAll', 'getElementById', 'getElementsByClassName', 'getElementsByName', 'getElementsByTagName'];
+    const mtdMap = methods.reduce((map, fn) => {
+        // eslint-disable-next-line no-param-reassign
+        map[fn] = () => (...args) => shadowRoot[fn](...args);
+        return map;
+    }, {});
+    override(mtdMap);
 }

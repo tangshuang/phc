@@ -5,10 +5,15 @@ export { define };
 const config = {};
 
 const plugins = [];
-const createHook = method => config[method] = (...args) => plugins.reduce(
-    (_, plugin) => plugin[method]?.(...args),
-    null,
-);
+const createHook = (method) => {
+    if (!plugins.some(item => item[method])) {
+        return;
+    }
+    config[method] = (...args) => plugins.reduce(
+        (_, plugin) => plugin[method]?.(...args),
+        null,
+    );
+};
 
 export function use(plugin) {
     plugins.push(plugin);

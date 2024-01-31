@@ -25,7 +25,7 @@ Light Javascript Hypertext File Component Framework.
 
 ## Write a component
 
-**Step 1**: write a `some.htm` file with Hypertext
+Write a `some.htm` file with Hypertext
 
 ```html
 <style>
@@ -39,21 +39,20 @@ Light Javascript Hypertext File Component Framework.
 </div>
 
 <script>
-  // read step 2
-</script>
-```
-
-**Step 2**: use `Document` to call context
-
-```html
-<script>
-  const doc = new Document();
-
   fetch('some_article_url').then(res => res.text()).then((text) => {
-    doc.querySelector('.container main').innerText = text;
+    document.querySelector('.container main').innerText = text;
   });
 </script>
 ```
+
+**Script Limitation**
+
+In `script` part, we CANNOT use Web native API, because the scripts (includes `<script src="...">`) are all running in a code sandbox. The limitation:
+
+- Some Window API should not be used, includes `history`, `location` or any others, `window` can only be used as a global object to share data
+- Events of window and docuements are not worked as expected
+- You cound not select elements outside the component
+- Other unknown limitation
 
 ## Attributes
 
@@ -63,12 +62,11 @@ Light Javascript Hypertext File Component Framework.
 
 ```html
 <script>
-  const doc = new Document();
-  const attrs = doc.rootElement.attributes; // https://developer.mozilla.org/zh-CN/docs/Web/API/NamedNodeMap
+  const attrs = document.rootElement.attributes; // https://developer.mozilla.org/zh-CN/docs/Web/API/NamedNodeMap
   const type = attrs.type.value; // here `type` is the passed attribute whose value is `book`
 
   fetch(`some_article_url?type=${type}`).then(res => res.text()).then((text) => {
-    doc.querySelector('.container main').innerText = text;
+    document.querySelector('.container main').innerText = text;
   });
 </script>
 ```

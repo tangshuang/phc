@@ -168,6 +168,7 @@ export function parseNode(node, options) {
 
     walk(node, 'img', 'src');
     walk(node, 'a', 'href');
+    walk(node, 'source', 'src');
     walk(node, PHC_TAG, 'src');
 
     if (options?.onParseNode) {

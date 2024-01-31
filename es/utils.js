@@ -21,7 +21,7 @@ export function resolveUrl(baseUrl, uri) {
     }
 
     // uri是根绝对路径
-    if (uri.indexOf('/') === 0) {
+    if (isAbsPath(uri)) {
         if (root === '/') {
             return uri;
         }
@@ -61,6 +61,10 @@ export function resolveUrl(baseUrl, uri) {
 
     const url = `${roots.join('/')}/${blocks.join('/')}`;
     return url;
+}
+
+export function isAbsPath(url) {
+    return url[0] === '/' && url[1] !== '/';
 }
 
 export function isAbsUrl(url) {

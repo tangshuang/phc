@@ -20,6 +20,12 @@ export class PHCElement extends HTMLElement {
         const url = this.getUrl();
         const options = this.getOptions();
         const [links, cssChunks, jsChunks, htmlChunks] = await useModule(url, options);
+
+        // const baseUrl = resolveUrl(url, '.');
+        // const base = document.createElement('base');
+        // base.href = baseUrl;
+        // appendChild(this.shadowRoot, base);
+
         useLinks(links, this);
         useCss(cssChunks, this);
         useHtml(htmlChunks, this);
@@ -101,7 +107,12 @@ async function runScripts(scripts, customElement) {
     sandbox.style.position = 'fixed';
     sandbox.style.top = '-100em';
     sandbox.style.opacity = '0';
-    sandbox.srcdoc = innerHTML;
+
+    // const url = customElement.getUrl();
+    // const baseUrl = resolveUrl(url, '.');
+    // const html = `<base href="${baseUrl}">\n${innerHTML}`;
+    const html = innerHTML;
+    sandbox.srcdoc = html;
     // eslint-disable-next-line no-param-reassign
     customElement.sandbox = sandbox;
 

@@ -67,9 +67,11 @@ export async function parseChunks(text, options) {
 
 export function parseLink(link, options) {
     const { absUrl } = options;
-    const href = getAttribute(link, 'src');
-    const newHref = resolveUrl(absUrl, href);
-    setAttribute(link, 'href', newHref);
+    const href = getAttribute(link, 'href');
+    if (href) {
+        const newHref = resolveUrl(absUrl, href);
+        setAttribute(link, 'href', newHref);
+    }
     return link;
 }
 

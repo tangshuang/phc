@@ -26,7 +26,7 @@ module.exports = [
             path: __dirname,
             filename: 'index.js',
             library: 'phc',
-            libraryTarget: 'umd',
+            libraryTarget: 'window',
         },
         resolve: {
             alias,

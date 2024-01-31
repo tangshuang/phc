@@ -14,7 +14,6 @@ Light Javascript Hypertext File Component Framework.
 - Nested component system
 - Fast, vanilla.js as underlying driver
 - Small and light, 5kb
-- Support browsers with ES5
 
 ## Examples
 

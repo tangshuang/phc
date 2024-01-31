@@ -1,4 +1,15 @@
-import { isAbsUrl, resolveUrl, createElement, appendChild, defineProperty, querySelectorAll, getAttribute, getAttributeNames, forEach, upperCase, toArrary } from './utils.js';
+import {
+    isAbsUrl,
+    resolveUrl,
+    createElement,
+    appendChild,
+    querySelectorAll,
+    getAttribute,
+    forEach,
+    upperCase,
+    toArrary,
+    setAttribute,
+} from './utils.js';
 import { PHC_TAG } from './constants.js';
 
 export const PHC_FILES = {};
@@ -36,50 +47,30 @@ export async function parseChunks(text, options) {
         options.onParseChunks(temp, options.absUrl);
     }
 
-    const metaBlocks = toArrary(querySelectorAll(temp, 'meta'));
     const linkBlocks = toArrary(querySelectorAll(temp, 'link'));
     const cssBlocks = toArrary(querySelectorAll(temp, 'style'));
     const jsBlocks = toArrary(querySelectorAll(temp, 'script'));
     const htmlBlocks = toArrary(temp.children).filter(item => !['META', 'LINK', 'STYLE', 'SCRIPT'].includes(item.nodeName));
 
-    const metas = metaBlocks.map(meta => parseMeta(meta, options));
     const links = linkBlocks.map(link => parseLink(link, options));
     const cssChunks = cssBlocks.map(style => parseCss(style, options));
     const jsChunks = jsBlocks.map(script => parseScript(script, options));
     const htmlChunks = htmlBlocks.map(node => parseNode(node, options));
 
-    return [metas, links, cssChunks, jsChunks, htmlChunks];
-}
-
-export function parseMeta(meta) {
-    const names = getAttributeNames(meta);
-    const obj = names.reduce((obj, key) => {
-        // eslint-disable-next-line no-param-reassign
-        obj[key] = getAttribute(meta, key);
-        return obj;
-    }, {});
-    return obj;
+    return [
+        links,
+        cssChunks,
+        jsChunks,
+        htmlChunks,
+    ];
 }
 
 export function parseLink(link, options) {
     const { absUrl } = options;
-    const names = getAttributeNames(link);
-    const ini = {};
-    defineProperty(ini, '__link', { get: () => link, enumerable: false });
-    const obj = names.reduce((obj, key) => {
-        const value = link.getAttribute(key);
-        if (key === 'href' && !isAbsUrl(value)) {
-            const newHref = resolveUrl(absUrl, value);
-            // eslint-disable-next-line no-param-reassign
-            obj[key] = newHref;
-        }
-        else {
-            // eslint-disable-next-line no-param-reassign
-            obj[key] = value;
-        }
-        return obj;
-    }, ini);
-    return obj;
+    const href = getAttribute(link, 'src');
+    const newHref = resolveUrl(absUrl, href);
+    setAttribute(link, 'href', newHref);
+    return link;
 }
 
 export function parseCss(style, options) {
@@ -135,7 +126,7 @@ export function parseScript(script, options) {
     const src = script.getAttribute('src');
     if (src && !isAbsUrl(src)) {
         const newSrc = resolveUrl(absUrl, src);
-        script.setAttribute('src', newSrc);
+        setAttribute(script, 'src', newSrc);
     }
 
     if (options?.onParseScript) {
@@ -152,7 +143,7 @@ export function parseNode(node, options) {
         const url = getAttribute(child, attr);
         if (url && !isAbsUrl(url)) {
             const newUrl = resolveUrl(absUrl, url);
-            child.setAttribute(attr, newUrl);
+            setAttribute(child, attr, newUrl);
         }
     };
 

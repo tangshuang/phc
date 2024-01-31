@@ -70,27 +70,6 @@ export function isAbsUrl(url) {
     return /^[a-z]+:\/\//.test(url);
 }
 
-export function getStringHash(str) {
-    let hash = 5381;
-    let i = str.length;
-
-    while (i) {
-        // eslint-disable-next-line no-plusplus
-        hash = (hash * 33) ^ str.charCodeAt(--i);
-    }
-
-    return hash >>> 0;
-}
-
-export function createSafeExp(exp) {
-    const sign = '*.?+-$^!<>[](){}|\\/';
-    const signArr = sign.split('');
-    const expArr = exp.split('');
-    const expList = expArr.map(char => (signArr.indexOf(char) > -1 ? `\\${char}` : char));
-    const safeExp = expList.join('');
-    return safeExp;
-}
-
 export const querySelectorAll = (el, selector) => el.querySelectorAll(selector);
 export const getAttribute = (el, attr) => el.getAttribute(attr);
 export const getAttributeNames = el => el.getAttributeNames();
@@ -99,7 +78,5 @@ export const appendChild = (el, child) => el.appendChild(child);
 export const { keys, defineProperty } = Object;
 export const createElement = tag => document.createElement(tag);
 export const toArrary = arr => Array.from(arr);
-
-export function upperCase(str) {
-    return str.toUpperCase();
-}
+export const setAttribute = (el, attr, value) => el.setAttribute(attr, value);
+export const upperCase = str => str.toUpperCase();

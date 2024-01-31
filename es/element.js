@@ -19,7 +19,7 @@ export class PHCElement extends HTMLElement {
     async connectedCallback() {
         const url = this.getUrl();
         const options = this.getOptions();
-        const [, links, cssChunks, jsChunks, htmlChunks] = await useModule(url, options);
+        const [links, cssChunks, jsChunks, htmlChunks] = await useModule(url, options);
         useLinks(links, this);
         useCss(cssChunks, this);
         useHtml(htmlChunks, this);
@@ -36,8 +36,7 @@ export class PHCElement extends HTMLElement {
 function useLinks(links, customElement) {
     const { shadowRoot } = customElement;
     forEach(links, (link) => {
-        // eslint-disable-next-line no-underscore-dangle
-        appendChild(shadowRoot, link.__link);
+        appendChild(shadowRoot, link);
     });
 }
 
@@ -113,7 +112,7 @@ async function runScripts(scripts, customElement) {
     const { shadowRoot } = customElement;
 
     /**
-     * 重写接口，以让内部生效
+     * 重写接口，以让内部document生效
      */
 
     const override = (map) => {

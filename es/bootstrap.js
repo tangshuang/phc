@@ -1,5 +1,6 @@
 import { resolveUrl, querySelectorAll, getAttribute, forEach } from './utils.js';
 import { PHCElement } from './element.js';
+import { PHC_TAG } from './constants.js';
 
 export function bootstrap(currUrl, options) {
     defineElement(currUrl, options);
@@ -23,7 +24,7 @@ function setupLinks(currUrl, options) {
 }
 
 function defineElement(currUrl, options) {
-    class PHC extends PHCElement {
+    class PHCXElement extends PHCElement {
         getOptions() {
             return options;
         }
@@ -33,7 +34,7 @@ function defineElement(currUrl, options) {
             return url;
         }
     }
-    customElements.define('phc-x', PHC);
+    customElements.define(PHC_TAG, PHCXElement);
 }
 
 export function define(name, url, options) {

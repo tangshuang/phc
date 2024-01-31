@@ -156,4 +156,6 @@ async function runScripts(scripts, customElement) {
         return map;
     }, {});
     override(mtdMap);
+
+    win.IS_PHC_COMPONENT = 1;
 }

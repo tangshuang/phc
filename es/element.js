@@ -157,15 +157,15 @@ function runScripts(scripts, customElement) {
     }, {});
     override(win.HTMLDocument.prototype, mtdMap);
 
-    // 支持组件内定义customeElement，但是注意，会污染全局
-    win.HTMLElement = window.HTMLElement;
-    override(win.CustomElementRegistry.prototype, {
-        define: () => (...args) => customElements.define(...args),
-        get: () => (...args) => customElements.get(...args),
-        getName: () => (...args) => customElements.getName(...args),
-        upgrade: () => (...args) => customElements.upgrade(...args),
-        whenDefined: () => (...args) => customElements.whenDefined(...args),
-    });
+    // // 支持组件内定义customeElement，但是注意，会污染全局
+    // win.HTMLElement = window.HTMLElement;
+    // override(win.CustomElementRegistry.prototype, {
+    //     define: () => (...args) => customElements.define(...args),
+    //     get: () => (...args) => customElements.get(...args),
+    //     getName: () => (...args) => customElements.getName(...args),
+    //     upgrade: () => (...args) => customElements.upgrade(...args),
+    //     whenDefined: () => (...args) => customElements.whenDefined(...args),
+    // });
 
     win.IS_PHC = 1;
 }

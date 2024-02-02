@@ -79,7 +79,7 @@ export const getAttribute = (el, attr) => el.getAttribute(attr);
 export const getAttributeNames = el => el.getAttributeNames();
 export const forEach = (arr, fn) => arr.forEach(fn);
 export const appendChild = (el, child) => el.appendChild(child);
-export const { keys, defineProperty } = Object;
+export const { keys, defineProperty, defineProperties } = Object;
 export const createElement = tag => document.createElement(tag);
 export const toArrary = arr => Array.from(arr);
 export const setAttribute = (el, attr, value) => el.setAttribute(attr, value);

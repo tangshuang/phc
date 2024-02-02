@@ -1,5 +1,5 @@
 import { useModule } from './loader.js';
-import { forEach, appendChild, createElement, getAttribute, resolveUrl } from './utils.js';
+import { forEach, appendChild, createElement, getAttribute, resolveUrl, defineProperties, keys } from './utils.js';
 
 export class PHCElement extends HTMLElement {
     constructor() {
@@ -63,9 +63,9 @@ function useHtml(htmlChunks, customElement) {
     });
 }
 
-async function useJs(jsChunks, customElement) {
+function useJs(jsChunks, customElement) {
     const scripts = [];
-    await Promise.all(jsChunks.map(async (chunk) => {
+    forEach(jsChunks, (chunk) => {
         const type = getAttribute(chunk, 'type');
 
         if (type && type !== 'module' && type !== 'text/javascript') {
@@ -76,16 +76,16 @@ async function useJs(jsChunks, customElement) {
         const text = chunk.innerHTML;
 
         scripts.push({ text, src, type });
-    }));
+    });
 
     if (!scripts.length) {
         return;
     }
 
-    await runScripts(scripts, customElement);
+    runScripts(scripts, customElement);
 }
 
-async function runScripts(scripts, customElement) {
+function runScripts(scripts, customElement) {
     const innerContents = scripts
         .map(({ src, text, type }) => {
             const script = createElement('script');
@@ -126,16 +126,16 @@ async function runScripts(scripts, customElement) {
      * 重写接口，以让内部document生效
      */
 
-    const override = (map) => {
-        const desc = Object.keys(map).reduce((o, key) => {
+    const override = (api, map) => {
+        const desc = keys(map).reduce((o, key) => {
             // eslint-disable-next-line no-param-reassign
             o[key] = { get: map[key] };
             return o;
         }, {});
-        Object.defineProperties(win.HTMLDocument.prototype, desc);
+        defineProperties(api, desc);
     };
 
-    override({
+    override(win.HTMLDocument.prototype, {
         body: () => shadowRoot,
         rootElement: () => customElement,
         defaultView: () => window,
@@ -155,7 +155,17 @@ async function runScripts(scripts, customElement) {
         map[fn] = () => (...args) => shadowRoot[fn](...args);
         return map;
     }, {});
-    override(mtdMap);
+    override(win.HTMLDocument.prototype, mtdMap);
+
+    // 支持组件内定义customeElement，但是注意，会污染全局
+    win.HTMLElement = window.HTMLElement;
+    override(win.CustomElementRegistry.prototype, {
+        define: () => (...args) => customElements.define(...args),
+        get: () => (...args) => customElements.get(...args),
+        getName: () => (...args) => customElements.getName(...args),
+        upgrade: () => (...args) => customElements.upgrade(...args),
+        whenDefined: () => (...args) => customElements.whenDefined(...args),
+    });
 
     win.IS_PHC = 1;
 }

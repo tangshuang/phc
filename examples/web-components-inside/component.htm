@@ -1,0 +1,10 @@
+<some-x></some-x>
+
+<script>
+    class SomeX extends document.defaultView.HTMLElement {
+        connectedCallback() {
+            this.innerHTML = 'some'
+        }
+    }
+    customElements.define('some-x', SomeX);
+</script>

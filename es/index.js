@@ -35,3 +35,19 @@ if (document.readyState === 'complete') {
 else {
     addEventListener('load', () => bootstrap(currUrl, config));
 }
+
+/**
+ * 获取上下文对应的对象
+ */
+export function getOutsideContext() {
+    if (!window.IS_PHC) {
+        return;
+    }
+    const win = document.defaultView;
+    return {
+        window: win,
+        document: win.document,
+        shadowRoot: document.body,
+        rootElement: document.rootElement,
+    };
+}

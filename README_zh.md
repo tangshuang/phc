@@ -105,6 +105,27 @@ define('some-tag', '...some_url...');
 
 其中`define`的第二个参数可以直接传入.htm文件的url地址。
 
+## getOutsideContext
+
+在 PHC 组件文件中，你可以引入 phc 的库文件之后，获取组件外部的信息：
+
+```html
+<!-- inside phc -->
+<script src="https://unpkg.com/phc"></script>
+<script>
+const { getOutsideContext } = window.phc;
+const context = getOutsideContext();
+/**
+ * {
+ *   window,
+ *   document,
+ *   rootElement,
+ *   shadowRoot,
+ * }
+ */
+</script>
+```
+
 ## MIT License
 
 Copyright (c) 2024 Shuang Tang

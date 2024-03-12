@@ -103,6 +103,27 @@ import { define } from 'https://unpkg.com/phc/es/index.js';
 define('some-tag', '...some_url...');
 ```
 
+## getOutsideContext
+
+In a PHC file, you can import the phc library file to get outside context:
+
+```html
+<!-- inside phc -->
+<script src="https://unpkg.com/phc"></script>
+<script>
+const { getOutsideContext } = window.phc;
+const context = getOutsideContext();
+/**
+ * {
+ *   window,
+ *   document,
+ *   rootElement,
+ *   shadowRoot,
+ * }
+ */
+</script>
+```
+
 ## MIT License
 
 Copyright (c) 2024 Shuang Tang

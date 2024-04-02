@@ -9,6 +9,7 @@ import {
     upperCase,
     toArrary,
     setAttribute,
+    isNormalUrl,
 } from './utils.js';
 import { PHC_TAG } from './constants.js';
 
@@ -68,7 +69,7 @@ export async function parseChunks(text, options) {
 export function parseLink(link, options) {
     const { absUrl } = options;
     const href = getAttribute(link, 'href');
-    if (href) {
+    if (isNormalUrl(href)) {
         const newHref = resolveUrl(absUrl, href);
         setAttribute(link, 'href', newHref);
     }
@@ -143,7 +144,7 @@ export function parseNode(node, options) {
 
     const transform = (child, attr) => {
         const url = getAttribute(child, attr);
-        if (url && !isAbsUrl(url)) {
+        if (isNormalUrl(url) && !isAbsUrl(url)) {
             const newUrl = resolveUrl(absUrl, url);
             setAttribute(child, attr, newUrl);
         }

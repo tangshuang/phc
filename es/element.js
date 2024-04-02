@@ -149,13 +149,16 @@ function runScripts(scripts, customElement) {
         lastElementChild: () => shadowRoot.lastElementChild,
     });
 
-    const methods = ['querySelector', 'querySelectorAll', 'getElementById', 'getElementsByClassName', 'getElementsByName', 'getElementsByTagName'];
-    const mtdMap = methods.reduce((map, fn) => {
-        // eslint-disable-next-line no-param-reassign
-        map[fn] = () => (...args) => shadowRoot[fn](...args);
-        return map;
-    }, {});
-    override(win.HTMLDocument.prototype, mtdMap);
+    const createPatch = (target, keys) => {
+        return keys.reduce((map, key) => {
+            const value = target[key];
+            const getter = typeof value === 'function' ? value.bind(target) : value;
+            map[key] = () => getter;
+            return map;
+        }, {});
+    };
+
+    override(win.HTMLDocument.prototype, createPatch(shadowRoot, ['querySelector', 'querySelectorAll', 'getElementById', 'getElementsByClassName', 'getElementsByName', 'getElementsByTagName']));
 
     // // 支持组件内定义customeElement，但是注意，会污染全局
     // win.HTMLElement = window.HTMLElement;
@@ -166,6 +169,8 @@ function runScripts(scripts, customElement) {
     //     upgrade: () => (...args) => customElements.upgrade(...args),
     //     whenDefined: () => (...args) => customElements.whenDefined(...args),
     // });
+
+    override(win, createPatch(window, ['innerHeight', 'innerWidth', 'scrollX', 'scrollY', 'scrollHeight', 'scrollTo', 'scrollBy', 'screen', 'history', 'navigator', 'navigation']));
 
     win.IS_PHC = 1;
 }

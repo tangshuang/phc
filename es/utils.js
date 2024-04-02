@@ -74,6 +74,11 @@ export function isAbsUrl(url) {
     return /^[a-z]+:\/\//.test(url);
 }
 
+
+export function isNormalUrl(url) {
+    return url && url.indexOf('#') !== 0 && url.indexOf('javascript:') !== 0;
+}
+
 export const querySelectorAll = (el, selector) => el.querySelectorAll(selector);
 export const getAttribute = (el, attr) => el.getAttribute(attr);
 export const getAttributeNames = el => el.getAttributeNames();

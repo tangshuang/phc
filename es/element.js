@@ -149,14 +149,13 @@ function runScripts(scripts, customElement) {
         lastElementChild: () => shadowRoot.lastElementChild,
     });
 
-    const createPatch = (target, keys) => {
-        return keys.reduce((map, key) => {
-            const value = target[key];
-            const getter = typeof value === 'function' ? value.bind(target) : value;
-            map[key] = () => getter;
-            return map;
-        }, {});
-    };
+    const createPatch = (target, keys) => keys.reduce((map, key) => {
+        const value = target[key];
+        const getter = typeof value === 'function' ? value.bind(target) : value;
+        // eslint-disable-next-line no-param-reassign
+        map[key] = () => getter;
+        return map;
+    }, {});
 
     override(win.HTMLDocument.prototype, createPatch(shadowRoot, ['querySelector', 'querySelectorAll', 'getElementById', 'getElementsByClassName', 'getElementsByName', 'getElementsByTagName']));
 

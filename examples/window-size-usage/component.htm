@@ -1,0 +1,23 @@
+<div id="root"></div>
+
+<script>
+function resize() {
+    const { innerWidth, innerHeight } = window;
+    const root = document.querySelector('#root');
+    root.style.width = (innerWidth / 2) + 'px';
+    root.style.height = (innerHeight / 2) + 'px';
+    console.log('resize:', innerWidth, innerHeight);
+}
+resize();
+window.addEventListener('resize', resize);
+</script>
+
+<style>
+    #root {
+        background-color: bisque;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>

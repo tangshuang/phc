@@ -151,9 +151,15 @@ function runScripts(scripts, customElement) {
 
     const createPatch = (target, keys) => keys.reduce((map, key) => {
         const value = target[key];
-        const getter = typeof value === 'function' ? value.bind(target) : value;
-        // eslint-disable-next-line no-param-reassign
-        map[key] = () => getter;
+        if (typeof value === 'function') {
+            // eslint-disable-next-line no-param-reassign
+            map[key] = () => value.bind(target);
+        }
+        else {
+            // 实时动态的取值
+            // eslint-disable-next-line no-param-reassign
+            map[key] = () => target[key];
+        }
         return map;
     }, {});
 
@@ -169,7 +175,7 @@ function runScripts(scripts, customElement) {
     //     whenDefined: () => (...args) => customElements.whenDefined(...args),
     // });
 
-    override(win, createPatch(window, ['innerHeight', 'innerWidth', 'scrollX', 'scrollY', 'scrollHeight', 'scrollTo', 'scrollBy', 'screen', 'history', 'navigator', 'navigation']));
+    override(win, createPatch(window, ['innerHeight', 'innerWidth', 'scroll', 'scrollX', 'scrollY', 'scrollHeight', 'scrollTo', 'scrollBy', 'screen', 'history', 'navigator', 'navigation', 'addEventListener', 'removeEventListener', 'getComputedStyle', 'getSelection', 'matchMedia', 'moveTo', 'postMessage', 'resizeBy', 'resizeTo']));
 
     win.IS_PHC = 1;
 }
